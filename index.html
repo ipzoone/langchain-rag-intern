@@ -265,13 +265,16 @@
     const d = new Date();
     return d.getHours().toString().padStart(2,"0") + ":" + d.getMinutes().toString().padStart(2,"0");
   }
+  // Base URL API otomatis mengikuti host halaman (port 8080 di server)
+  const API = window.location.origin;
+
   function kirimSaran(btn){
     document.getElementById("userInput").value = btn.textContent;
     kirimPesan();
   }
   function downloadLaporan(){
     const link = document.createElement("a");
-    link.href = "http://127.0.0.1:8000/download-laporan";
+    link.href = API + "/download-laporan";
     link.download = "laporan_magang.doc";
     document.body.appendChild(link);
     link.click();
@@ -279,7 +282,7 @@
   }
   async function resetChat(){
     try{
-      await fetch("http://127.0.0.1:8000/reset-chat", { method: "POST" });
+      await fetch(API + "/reset-chat", { method: "POST" });
     }catch(e){}
     window.riwayat = [];
   }
@@ -295,7 +298,7 @@
     if(!window.riwayat) window.riwayat = [];
 
     try{
-      const response = await fetch("http://127.0.0.1:8000/chat", {
+      const response = await fetch(API + "/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ pesan_user: text, riwayat: window.riwayat })
