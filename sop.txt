@@ -1,0 +1,18 @@
+Panduan Laporan Harian Magang - Codepolitan
+Mahasiswa Magang: Saif Ali Mushaddiq
+Institusi: Politeknik Negeri Indramayu
+Dosen Pembimbing: Fachrul Pralienka Bani Muhamad, M.Kom.
+Tempat Magang: Codepolitan
+
+1. Laporan harian wajib dibuat dan dicatat setiap hari kerja magang melalui asisten AI (ipzonex) menggunakan fitur pencatatan laporan.
+2. Isi laporan harian minimal memuat:
+   a. Kegiatan atau tugas yang dikerjakan hari itu.
+   b. Hasil atau progress dari kegiatan tersebut.
+   c. Hal baru yang dipelajari.
+3. Laporan harus ditulis dengan bahasa yang jelas, runtut, dan menyebutkan secara spesifik tools/teknologi yang digunakan (misal: LangChain, FastAPI, RAG, FAISS).
+4. Jika ada kendala yang dihadapi selama magang, wajib dicantumkan di dalam laporan dengan format:
+   - Kendala: (jelaskan masalahnya)
+   - Penyebab: (dugaan atau hasil analisis)
+   - Tindakan: (cara mengatasi atau rencana tindak lanjut)
+5. Kendala yang belum terselesaikan harus dilaporkan juga ke dosen pembimbing (Pak Fachrul) agar bisa didiskusikan.
+6. Laporan yang sudah tercatat dapat diminta kembali ke asisten AI kapan saja untuk direkap sebagai laporan mingguan atau laporan akhir magang.

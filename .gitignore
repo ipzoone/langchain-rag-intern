@@ -1,0 +1,9 @@
+# Environment variables (jangan dipush - berisi API key)
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Laporan magang (opsional, hapus baris ini kalau mau ikut dipush)
+laporan_magang.txt

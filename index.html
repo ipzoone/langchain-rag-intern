@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neko · Asisten Koin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF4E9;
+    --peach:#FDE3CC;
+    --peach-deep:#F9C79B;
+    --ink:#3E2A1E;
+    --ink-soft:#8A7362;
+    --coral:#FF7A45;
+    --coral-deep:#E85D2A;
+    --gold:#FFB100;
+    --gold-soft:#FFD873;
+    --white:#FFFFFF;
+    --line:rgba(62,42,30,0.08);
+    --shadow:0 18px 40px -20px rgba(62,42,30,0.35);
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;
+    font-family:'Nunito',sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(circle at 15% 10%, #FFE7CF 0%, transparent 45%),
+      radial-gradient(circle at 85% 90%, #FFD9B0 0%, transparent 40%),
+      var(--cream);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:24px;
+  }
+
+  /* ---------- App frame ---------- */
+  .app{
+    width:100%;
+    max-width:420px;
+    height:min(860px, calc(100vh - 48px));
+    background:var(--white);
+    border-radius:28px;
+    overflow:hidden;
+    box-shadow:var(--shadow);
+    display:flex;
+    flex-direction:column;
+    position:relative;
+    border:1px solid var(--line);
+  }
+  @media (min-width:900px){
+    body{padding:40px;}
+    .app{
+      max-width:900px;
+      height:min(720px, calc(100vh - 80px));
+      flex-direction:row;
+      border-radius:32px;
+    }
+  }
+
+  /* ---------- Side panel (desktop companion) ---------- */
+  .side{
+    display:none;
+    flex-direction:column;
+    justify-content:center;
+    gap:18px;
+    width:320px;
+    padding:44px 36px;
+    background:
+      linear-gradient(180deg, #FFDDB3 0%, #FFC98C 100%);
+    position:relative;
+    overflow:hidden;
+  }
+  @media (min-width:900px){ .side{display:flex;} }
+  .side::before{
+    content:"";
+    position:absolute; inset:0;
+    background-image:
+      radial-gradient(circle, rgba(255,255,255,0.35) 2px, transparent 2.5px);
+    background-size:26px 26px;
+    opacity:0.5;
+  }
+  .side .badge{
+    align-self:flex-start;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    background:var(--white);
+    color:var(--coral-deep);
+    padding:6px 14px;
+    border-radius:999px;
+    box-shadow:var(--shadow);
+    position:relative;
+    z-index:1;
+  }
+  .side h1{
+    font-family:'Baloo 2',sans-serif;
+    font-size:34px;
+    line-height:1.15;
+    margin:0;
+    color:var(--ink);
+    position:relative;
+    z-index:1;
+  }
+  .side p{
+    margin:0;
+    font-size:15px;
+    color:#5C4430;
+    line-height:1.6;
+    position:relative;
+    z-index:1;
+  }
+  .side .paw-stack{
+    position:relative;
+    z-index:1;
+    display:flex;
+    gap:10px;
+    margin-top:8px;
+  }
+  .paw-chip{
+    width:52px; height:52px;
+    border-radius:16px;
+    background:rgba(255,255,255,0.55);
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px;
+    box-shadow:0 6px 14px -8px rgba(0,0,0,0.3);
+  }
+
+  /* ---------- Chat column ---------- */
+  .chat-col{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    min-width:0;
+    position:relative;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 100%);
+  }
+
+  /* header */
+  .header{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:16px 18px;
+    border-bottom:1px solid var(--line);
+    background:var(--white);
+    z-index:3;
+  }
+  .icon-btn{
+    width:34px; height:34px;
+    border-radius:50%;
+    border:none;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    font-size:16px;
+    flex-shrink:0;
+  }
+  .icon-btn.back{ background:transparent; color:var(--coral-deep); font-size:20px;}
+  .avatar{
+    width:40px; height:40px;
+    border-radius:50%;
+    background:linear-gradient(160deg, var(--gold-soft), var(--coral));
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px;
+    flex-shrink:0;
+    box-shadow:0 4px 10px -4px rgba(232,93,42,0.6);
+  }
+  .header .who{ flex:1; min-width:0; }
+  .header .who .name{
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    display:flex; align-items:center; gap:6px;
+  }
+  .header .who .name .dot{
+    width:8px; height:8px; border-radius:50%; background:#3CCB6B;
+    box-shadow:0 0 0 3px rgba(60,203,107,0.2);
+  }
+  .header .who .status{ font-size:12px; color:var(--ink-soft); }
+  .header .actions{ display:flex; gap:8px; }
+  .header .actions .icon-btn{ background:var(--peach); color:var(--coral-deep); }
+
+  /* messages area */
+  .messages{
+    flex:1;
+    overflow-y:auto;
+    padding:20px 16px 12px;
+    position:relative;
+    background-color:var(--peach);
+    background-image:
+      radial-gradient(circle 3px at 10% 15%, rgba(255,255,255,0.6), transparent 60%),
+      radial-gradient(circle 3px at 80% 25%, rgba(255,255,255,0.6), transparent 60%),
+      radial-gradient(circle 3px at 35% 65%, rgba(255,255,255,0.6), transparent 60%),
+      radial-gradient(circle 3px at 65% 85%, rgba(255,255,255,0.6), transparent 60%);
+  }
+  .messages::-webkit-scrollbar{ width:6px; }
+  .messages::-webkit-scrollbar-thumb{ background:var(--peach-deep); border-radius:6px; }
+
+  .day-chip{
+    text-align:center;
+    margin:4px 0 16px;
+  }
+  .day-chip span{
+    background:rgba(255,255,255,0.75);
+    color:var(--ink-soft);
+    font-size:12px;
+    font-weight:700;
+    padding:5px 14px;
+    border-radius:999px;
+  }
+
+  .row{ display:flex; margin-bottom:14px; }
+  .row.bot{ justify-content:flex-start; }
+  .row.user{ justify-content:flex-end; }
+
+  .bubble{
+    max-width:78%;
+    padding:12px 14px;
+    border-radius:18px;
+    font-size:14.5px;
+    line-height:1.55;
+    position:relative;
+    box-shadow:0 8px 18px -12px rgba(62,42,30,0.35);
+  }
+  .row.bot .bubble{
+    background:var(--white);
+    border-bottom-left-radius:5px;
+    color:var(--ink);
+  }
+  .row.user .bubble{
+    background:linear-gradient(135deg, var(--coral), var(--coral-deep));
+    color:var(--white);
+    border-bottom-right-radius:5px;
+  }
+  .bubble .time{
+    display:block;
+    margin-top:6px;
+    font-size:11px;
+    opacity:0.55;
+    text-align:right;
+  }
+
+  /* ---------- Markdown styling di dalam bubble ---------- */
+  .bubble p{ margin:0 0 8px; }
+  .bubble p:last-child{ margin-bottom:0; }
+  .bubble h1,.bubble h2,.bubble h3,.bubble h4{
+    font-family:'Baloo 2',sans-serif;
+    margin:10px 0 6px;
+    line-height:1.25;
+  }
+  .bubble h1{ font-size:18px; }
+  .bubble h2{ font-size:16.5px; }
+  .bubble h3{ font-size:15.5px; }
+  .bubble h4{ font-size:14.5px; }
+  .bubble ul,.bubble ol{ margin:6px 0 8px; padding-left:20px; }
+  .bubble li{ margin:3px 0; }
+  .bubble strong{ font-weight:800; color:var(--coral-deep); }
+  .bubble em{ font-style:italic; }
+  .bubble a{ color:var(--coral-deep); text-decoration:underline; }
+  .bubble code{
+    background:var(--peach);
+    padding:1px 6px;
+    border-radius:6px;
+    font-family:monospace;
+    font-size:13px;
+  }
+  .bubble pre{
+    background:var(--peach);
+    padding:10px 12px;
+    border-radius:12px;
+    overflow-x:auto;
+    margin:8px 0;
+  }
+  .bubble pre code{ background:none; padding:0; }
+  .bubble blockquote{
+    border-left:3px solid var(--peach-deep);
+    margin:8px 0;
+    padding:4px 12px;
+    color:var(--ink-soft);
+  }
+
+  .reactions{
+    display:flex;
+    gap:8px;
+    margin:8px 0 4px 4px;
+  }
+  .reactions button{
+    width:32px; height:32px;
+    border-radius:50%;
+    border:1px solid var(--line);
+    background:var(--white);
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:13px;
+    color:var(--ink-soft);
+    transition:transform .15s ease;
+  }
+  .reactions button:hover{ transform:translateY(-2px); border-color:var(--coral); color:var(--coral-deep); }
+
+  .typing-row{ display:none; }
+  .typing-row.show{ display:flex; }
+  .typing-bubble{
+    background:var(--white);
+    border-radius:18px;
+    border-bottom-left-radius:5px;
+    padding:12px 16px;
+    display:flex;
+    gap:5px;
+    box-shadow:0 8px 18px -12px rgba(62,42,30,0.35);
+  }
+  .typing-bubble span{
+    width:7px; height:7px;
+    border-radius:50%;
+    background:var(--peach-deep);
+    animation:bounce 1.2s infinite ease-in-out;
+  }
+  .typing-bubble span:nth-child(2){ animation-delay:.15s; }
+  .typing-bubble span:nth-child(3){ animation-delay:.3s; }
+  @keyframes bounce{
+    0%,60%,100%{ transform:translateY(0); opacity:.5; }
+    30%{ transform:translateY(-5px); opacity:1; }
+  }
+
+  /* offer bar */
+  .offer{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    padding:12px 16px;
+    background:var(--white);
+    border-top:1px solid var(--line);
+    z-index:2;
+  }
+  .offer .label{
+    font-size:13px;
+    color:var(--ink-soft);
+    font-weight:700;
+  }
+  .offer .coin-count{
+    display:flex; align-items:center; gap:6px;
+    font-family:'Baloo 2',sans-serif;
+    font-weight:700;
+    font-size:16px;
+    color:var(--ink);
+  }
+  .coin-icon{
+    width:20px; height:20px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--gold-soft), var(--gold) 70%);
+    box-shadow:inset 0 -2px 3px rgba(0,0,0,0.15);
+    display:inline-block;
+  }
+  .claim-btn{
+    border:none;
+    background:var(--peach-deep);
+    color:var(--ink-soft);
+    font-weight:800;
+    font-family:'Baloo 2',sans-serif;
+    font-size:13px;
+    padding:10px 18px;
+    border-radius:999px;
+    cursor:not-allowed;
+    transition:all .2s ease;
+  }
+  .claim-btn.ready{
+    background:linear-gradient(135deg, var(--gold-soft), var(--gold));
+    color:#5C3A00;
+    cursor:pointer;
+    box-shadow:0 8px 16px -8px rgba(255,177,0,0.7);
+  }
+  .claim-btn.ready:hover{ transform:translateY(-1px); }
+
+  /* input area */
+  .input-area{
+    padding:12px 16px 8px;
+    background:var(--white);
+  }
+  .input-row{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:var(--cream);
+    border:1px solid var(--line);
+    border-radius:999px;
+    padding:6px 6px 6px 16px;
+  }
+  .input-row input{
+    flex:1;
+    border:none;
+    background:transparent;
+    outline:none;
+    font-size:14px;
+    font-family:'Nunito',sans-serif;
+    color:var(--ink);
+  }
+  .input-row input::placeholder{ color:#B79A85; }
+  .send-btn{
+    width:38px; height:38px;
+    border-radius:50%;
+    border:none;
+    background:linear-gradient(135deg, var(--coral), var(--coral-deep));
+    color:var(--white);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    transition:transform .12s ease;
+  }
+  .send-btn:active{ transform:scale(0.92); }
+  .disclaimer{
+    text-align:center;
+    font-size:10.5px;
+    color:#BBA48F;
+    padding:8px 12px 14px;
+  }
+  .disclaimer a{ color:var(--coral-deep); text-decoration:none; font-weight:700; }
+</style>
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Desktop side panel -->
+  <aside class="side">
+    <span class="badge">🐾 Program Koin</span>
+    <h1>Ngobrol bareng<br>Neko, kucing koin.</h1>
+    <p>Jawab pertanyaan hariannya buat dapat kesempatan koin. Percakapan disambungkan langsung ke backend AI kamu sendiri.</p>
+    <div class="paw-stack">
+      <div class="paw-chip">🐾</div>
+      <div class="paw-chip">🪙</div>
+      <div class="paw-chip">✨</div>
+    </div>
+  </aside>
+
+  <!-- Chat column -->
+  <div class="chat-col">
+
+    <div class="header">
+      <button class="icon-btn back" title="Kembali">←</button>
+      <div class="avatar">🐱</div>
+      <div class="who">
+        <div class="name">Neko <span class="dot"></span></div>
+        <div class="status">Aktif sekarang</div>
+      </div>
+      <div class="actions">
+        <button class="icon-btn" title="Bantuan">?</button>
+        <button class="icon-btn" title="Bagikan">↗</button>
+      </div>
+    </div>
+
+    <div class="messages" id="messages">
+      <div class="day-chip"><span>Hari ini</span></div>
+
+      <div class="row bot">
+        <div class="bubble">
+          Halo! Aku Neko, kucing yang hobi kasih koin di sini. Aku udah kasih banyak banget koin hari ini. Kalo mau juga, jawab dulu dong, apa yang bikin kamu beda dari orang lain?
+          <span class="time">19:09</span>
+        </div>
+      </div>
+      <div class="reactions">
+        <button title="Suka">👍</button>
+        <button title="Kurang suka">👎</button>
+      </div>
+
+      <div class="row typing-row" id="typingRow">
+        <div class="typing-bubble"><span></span><span></span><span></span></div>
+      </div>
+    </div>
+
+    <div class="offer">
+      <div>
+        <div class="label">Penawaran buatmu</div>
+        <div class="coin-count"><span class="coin-icon"></span> 0</div>
+      </div>
+      <button class="claim-btn" id="claimBtn">Ambil Koin</button>
+    </div>
+
+    <div class="input-area">
+      <div class="input-row">
+        <input type="text" id="userInput" placeholder="Chat Neko buat dapat Koin" onkeydown="if(event.key==='Enter')kirimPesan()">
+        <button class="send-btn" onclick="kirimPesan()" title="Kirim">➤</button>
+      </div>
+      <div class="disclaimer">
+        Dibuat oleh AI, info mungkin salah. Jangan memakai fitur ini untuk aktivitas ilegal, merugikan, atau melanggar hak lainnya.<br>
+        <a href="#">S&amp;K berlaku.</a>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+  function renderText(raw){
+    if(typeof marked !== "undefined"){
+      return marked.parse(raw || "");
+    }
+    return (raw || "").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+  }
+
+  function scrollToBottom(){
+    const box = document.getElementById("messages");
+    box.scrollTop = box.scrollHeight;
+  }
+
+  function addMessage(role, text, time){
+    const box = document.getElementById("messages");
+    const typingRow = document.getElementById("typingRow");
+    const row = document.createElement("div");
+    row.className = "row " + (role === "user" ? "user" : "bot");
+    row.innerHTML = `<div class="bubble">${renderText(text)}<span class="time">${time}</span></div>`;
+    box.insertBefore(row, typingRow);
+    scrollToBottom();
+  }
+
+  function setTyping(show){
+    document.getElementById("typingRow").classList.toggle("show", show);
+    scrollToBottom();
+  }
+
+  function nowTime(){
+    const d = new Date();
+    return d.getHours().toString().padStart(2,"0") + ":" + d.getMinutes().toString().padStart(2,"0");
+  }
+
+  async function kirimPesan(){
+    const inputField = document.getElementById("userInput");
+    const text = inputField.value.trim();
+    if(!text) return;
+
+    addMessage("user", text, nowTime());
+    inputField.value = "";
+    setTyping(true);
+
+    try{
+      const response = await fetch("http://127.0.0.1:8000/chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pesan_user: text })
+      });
+      const data = await response.json();
+      setTyping(false);
+      addMessage("bot", data.jawaban, nowTime());
+    } catch(error){
+      setTyping(false);
+      addMessage("bot", "<span style='color:#E85D2A;'>Gagal terhubung ke backend.</span>", nowTime());
+    }
+  }
+</script>
+</body>
+</html>
